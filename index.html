@@ -13,6 +13,7 @@
       background-color: #000;
       color: #0f0;
       font-family: 'Courier New', Courier, monospace;
+      overflow: hidden; /* Prevent scrolling */
     }
     .terminal-window {
       border: 1px solid #0f0;
@@ -23,6 +24,7 @@
       max-width: 900px;
       background-color: #111;
       box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+      display: none; /* Hide terminal initially */
     }
     .prompt {
       display: block;
@@ -41,6 +43,24 @@
       overflow-y: auto;
       padding-right: 10px;
     }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.8); /* Dark overlay */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10; /* Above all other content */
+    }
+    .password-prompt {
+      background-color: #222;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
     a {
       color: #0f0;
       text-decoration: none;
@@ -52,6 +72,15 @@
 </head>
 <body>
 
+<!-- Overlay for password prompt -->
+<div class="overlay" id="overlay">
+  <div class="password-prompt">
+    <p style="color: white;">Please enter the password:</p>
+    <input type="password" id="password-input" class="form-control" autofocus>
+  </div>
+</div>
+
+<!-- Terminal Interface -->
 <div class="container-fluid d-flex align-items-center justify-content-center vh-100">
   <div class="terminal-window">
     <div class="terminal-content">
@@ -67,9 +96,8 @@
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 2 :  Implementation of all dimension tables and fact tables based on experiment 1 case study</p>
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 3 :   To perform OLAP operations in SQL environment based on experiment 1 case study.</p>
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 4 :   To perform OLAP operations in SQL environment based on experiment 1 case study.</p>
-      <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 5 :   To study WEKA and implement thedecision tree algorithm using WEKA.</p>
+      <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 5 :   To study WEKA and implement the decision tree algorithm using WEKA.</p>
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 6 :   To implement Naive Bayes classification algorithm using python</p>
-
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 7 :   To implement K-means clustering algorithm using python</p>
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 8 :   Implementation of Agglomerative hierarchical clustering algorithm using python.</p>
       <p class="prompt"> 10/19/2024  08:25 AM    &lt;DIR&gt;Exp 9 :   To implement association mining algorithm like Apriori using python </p>
@@ -87,6 +115,32 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  const correctPassword = 'yourPassword'; // Set your password here
+  const overlay = document.getElementById('overlay');
+  const passwordInput = document.getElementById('password-input');
+  const terminalWindow = document.querySelector('.terminal-window');
+
+  // Function to handle password input
+  function handlePasswordInput(event) {
+    if (event.key === 'Enter') {
+      if (passwordInput.value === correctPassword) {
+        overlay.style.display = 'none'; // Hide the overlay
+        terminalWindow.style.display = 'block'; // Show the terminal
+      } else {
+        alert('Incorrect password. Access denied.');
+        passwordInput.value = ''; // Clear input
+      }
+    }
+  }
+
+  // Show password prompt on load
+  window.onload = function() {
+    overlay.style.display = 'flex'; // Show the overlay
+    passwordInput.focus(); // Focus on password input
+    passwordInput.addEventListener('keypress', handlePasswordInput);
+  };
+
+  // Command input handling
   document.getElementById("cmd-input").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
       const inputValue = event.target.value.trim();
